@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Public Results — Fest Announcements</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Icons + Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- html2canvas for saving modal as image -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root{
+      --accent-1: #667eea;
+      --accent-2: #764ba2;
+      --muted: #6b7280;
+    }
+    html,body { height:100%; }
+    body{
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg,#f7f9fc 0%, #ffffff 100%);
+      color:#1f2937;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding-top:1.5rem;
+      padding-bottom:2.5rem;
+    }
+
+    /* Header */
+    .hero {
+      max-width:1100px;
+      margin:0 auto 1.5rem;
+      padding:1rem 1rem;
+    }
+    .brand {
+      display:flex;
+      gap:.75rem;
+      align-items:center;
+    }
+    .brand .logo {
+      width:48px;
+      height:48px;
+      border-radius:10px;
+      background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-weight:700;
+      box-shadow:0 6px 20px rgba(102,126,234,0.15);
+    }
+
+    /* Cards grid */
+    .cards {
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 1rem;
+    }
+    .programme-card {
+      border-radius:14px;
+      transition:transform .18s ease, box-shadow .18s ease;
+      box-shadow: 0 6px 22px rgba(16,24,40,0.06);
+      border: 1px solid rgba(15,23,42,0.03);
+      background: #fff;
+      overflow:hidden;
+    }
+    .programme-card:hover {
+      transform:translateY(-6px);
+      box-shadow: 0 16px 40px rgba(16,24,40,0.08);
+    }
+    .card-top {
+      padding:1rem 1rem;
+      background: linear-gradient(90deg, rgba(102,126,234,0.06), rgba(118,75,162,0.03));
+    }
+    .card-body-compact {
+      padding:1rem;
+    }
+    .badge-cat {
+      font-weight:600;
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:white;
+      border-radius:999px;
+      padding:.35rem .6rem;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.08);
+    }
+
+    /* Modal content styling for print/save */
+    .result-modal-card {
+      padding:1rem;
+      border-radius:10px;
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 18px 60px rgba(16,24,40,0.08);
+      max-width: 100%;
+    }
+    .result-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:.5rem;
+      margin-bottom: .75rem;
+    }
+    .result-title {
+      font-weight:700;
+      font-size:1.15rem;
+    }
+    .result-sub {
+      color: var(--muted);
+      font-size:.9rem;
+    }
+
+    /* Table */
+    .results-table th {
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:white;
+      border:none;
+    }
+    .results-table td, .results-table th {
+      vertical-align:middle;
+      padding:.6rem .75rem;
+    }
+
+    /* Image Capture Template Styles */
+    #imageCaptureTemplate {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 30px;
+      border-radius: 25px;
+      margin: 20px auto;
+      font-family: 'Inter', sans-serif;
+      color: white;
+      box-sizing: border-box;
+    }
+    .image-container {
+      text-align: center;
+    }
+    .fest-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: white;
+    }
+    .programme-name {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: white;
+    }
+    .result-number {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      color: rgba(255,255,255,0.8);
+    }
+    .detail-line {
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+      color: white;
+    }
+    .winners-container {
+      margin-top: 20px;
+    }
+    .winner-block {
+      margin-bottom: 15px;
+      padding: 10px 0;
+    }
+    .winner-top {
+      font-size: 1.1rem;
+      margin-bottom: 2px;
+    }
+    .student-name {
+      font-size: 1.2rem;
+    }
+    .winner-bottom {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      padding-left: 20px;
+    }
+
+    /* Responsive / mobile-first */
+    @media (min-width: 768px) {
+      .grid-cols {
+        display:grid;
+        grid-template-columns: repeat(2,1fr);
+        gap:1rem;
+      }
+    }
+    @media (min-width: 992px) {
+      .grid-cols {
+        grid-template-columns: repeat(3,1fr);
+      }
+    }
+
+    /* utility */
+    .center-note { text-align:center; color:var(--muted); margin-top:1.25rem; }
+    .small-muted { font-size:.85rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="brand">
+        <div class="logo">FH</div>
+        <div>
+          <h1 class="h5 mb-0">Fest — Public Results</h1>
+          <div class="small-muted">Announced results — official display</div>
+        </div>
+      </div>
+      <div class="text-end small-muted d-none d-md-block">Live • Public View</div>
+    </div>
+  </header>
+
+  <main class="cards">
+    <section class="search-bar mb-3">
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <input id="searchInput" class="form-control form-control-lg" placeholder="Search programmes or categories..." />
+        </div>
+        <div class="col-12 col-md-6 text-md-end">
+          <div class="small-muted mt-2 mt-md-0">Tap any card to view the podium (1st / 2nd / 3rd).</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="grid" class="grid-cols">
+      <!-- cards injected here -->
+    </section>
+
+    <div id="emptyNote" class="center-note" style="display:none;">
+      <div class="mb-2"><i class="bi bi-info-circle" style="font-size:1.2rem;"></i></div>
+      <div>No announced programmes found yet. Please check back later.</div>
+    </div>
+  </main>
+
+  <!-- View Modal -->
+  <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content result-modal-card" id="resultModalCard">
+        <div class="result-header">
+          <div>
+            <div id="modalTitle" class="result-title">Category - Programme</div>
+            <div id="modalSubtitle" class="result-sub">Result # — Date</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button id="saveImageBtn" class="btn btn-outline-primary btn-sm"><i class="bi bi-camera"></i> Save Image</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table results-table" id="modalResultsTable">
+            <thead>
+              <tr>
+                <th style="width:100px;">Place</th>
+                <th>Code</th>
+                <th>Chest</th>
+                <th>Student</th>
+                <th>Team</th>
+                <th style="width:110px;">Grade</th>
+                <th style="width:90px;">Points</th>
+              </tr>
+            </thead>
+            <tbody id="modalResultsBody">
+              <!-- rows inserted -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="small-muted mt-2">Only places (1st, 2nd, 3rd) are displayed publicly.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Image Capture Template -->
+  <div id="imageCaptureTemplate">
+    <div class="image-container">
+      <h2 id="fest-title" class="fest-title">🌟 Fest Official Result 🌟</h2>
+      <h1 id="programme-name" class="programme-name">PROGRAMME NAME</h1>
+      <p id="result-number" class="result-number">Result: #1</p>
+      <p id="category-line" class="detail-line">Category: Category</p>
+      <p id="programme-line" class="detail-line">Programme: Programme</p>
+      <div id="winners-container" class="winners-container">
+        <!-- winners inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1200;">
+    <div id="publicToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastBody">Saved</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getFirestore, collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // Use your existing config (you provided earlier)
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0eal8jWB6ksEpFCEYMRIOhzpAROwlXns",
+      authDomain: "festhub-d7138.firebaseapp.com",
+      projectId: "festhub-d7138",
+      storageBucket: "festhub-d7138.firebasestorage.app",
+      messagingSenderId: "396565568701",
+      appId: "1:396565568701:web:c2c4001be99eef231a6bd4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // DOM
+    const grid = document.getElementById('grid');
+    const emptyNote = document.getElementById('emptyNote');
+    const searchInput = document.getElementById('searchInput');
+    const modalEl = document.getElementById('resultModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalResultsBody = document.getElementById('modalResultsBody');
+    const saveImageBtn = document.getElementById('saveImageBtn');
+    const publicToast = document.getElementById('publicToast');
+    const toastBody = document.getElementById('toastBody');
+    const imageTemplate = document.getElementById('imageCaptureTemplate');
+    const festTitleEl = document.getElementById('fest-title');
+    const programmeNameEl = document.getElementById('programme-name');
+    const resultNumberEl = document.getElementById('result-number');
+    const categoryLineEl = document.getElementById('category-line');
+    const programmeLineEl = document.getElementById('programme-line');
+    const winnersContainerEl = document.getElementById('winners-container');
+
+    // Bootstrap modal instance is created dynamically later
+    let currentProgramme = null;
+    let programmes = []; // local cache
+    let students = []; // local cache
+    let festName = 'Fest 2025'; // fallback
+
+    // Fetch fest name once
+    async function loadFestName() {
+      try {
+        const festDoc = await getDoc(doc(db, 'fest', 'festName'));
+        if (festDoc.exists()) {
+          festName = festDoc.data().nameFest || festName;
+        }
+      } catch (err) {
+        console.error('Error loading fest name:', err);
+      }
+    }
+
+    // Load students (cache)
+    function loadStudents() {
+      const q = query(collection(db, 'students'));
+      return onSnapshot(q, (snap) => {
+        students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }, (err) => console.error('students load err', err));
+    }
+
+    // Listen announced programmes live
+    function loadAnnouncedProgrammes() {
+      // We show programmes with announced == true.
+      // If you prefer to require finalized as well, add another where('finalized','==',true)
+      const q = query(collection(db, 'programmes'), where('announced', '==', true), orderBy('finalizedAt', 'asc'));
+      return onSnapshot(q, (snap) => {
+        programmes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        programmes.forEach((p, index) => p.resultNumber = index + 1);
+        renderGrid(programmes);
+      }, (err) => console.error('programmes load err', err));
+    }
+
+    // Render card grid
+    function renderGrid(list) {
+      const search = (searchInput.value || '').trim().toLowerCase();
+      const filtered = list.filter(p => {
+        if (!search) return true;
+        return (p.name || '').toLowerCase().includes(search) || (p.category || '').toLowerCase().includes(search);
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = '';
+        emptyNote.style.display = 'block';
+        return;
+      }
+      emptyNote.style.display = 'none';
+
+      grid.innerHTML = filtered.map(p => {
+        const finalizedBadge = p.finalized ? `<span class="badge bg-success ms-1">Final</span>` : '';
+        const subtitle = p.type ? `${p.type}` : '';
+        const part = p.participantCount ? (p.category === 'General' ? ` • Group ${p.participantCount}` : '') : '';
+        return `
+          <div class="programme-card mb-3">
+            <div class="card-top d-flex justify-content-between align-items-start">
+              <div>
+                <div class="badge-cat">${escapeHtml(p.category || 'General')}</div>
+              </div>
+              <div class="small-muted text-end">${finalizedBadge}</div>
+            </div>
+            <div class="card-body-compact">
+              <h5 class="mb-1" style="font-size:1rem">${escapeHtml(p.name || 'Untitled')}</h5>
+              <div class="small-muted mb-3">${escapeHtml(subtitle)} ${part}</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="small-muted">Result #${p.resultNumber || '-'}</div>
+                <div>
+                  <button class="btn btn-sm btn-outline-info" onclick="openProgramme('${p.id}')"><i class="bi bi-eye"></i> View</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Escape helper to avoid markup injection in inserted strings
+    function escapeHtml(s = '') {
+      return String(s).replace(/[&<>"'`=\/]/g, function (c) {
+        return {
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+          '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+        }[c];
+      });
+    }
+
+    // Open programme modal and render only 1,2,3 places available
+    async function openProgramme(progId) {
+      const progDocRef = doc(db, 'programmes', progId);
+      const progSnap = await getDoc(progDocRef);
+      if (!progSnap.exists()) return;
+      const prog = { id: progSnap.id, ...progSnap.data() };
+      if (!prog.resultNumber) {
+        const idx = programmes.findIndex(x => x.id === prog.id);
+        prog.resultNumber = idx >= 0 ? idx + 1 : '-';
+      }
+      currentProgramme = prog;
+
+      modalTitle.textContent = `${prog.category || 'Category'} — ${prog.name || 'Programme'}`;
+      modalSubtitle.textContent = `Result #${prog.resultNumber || '-'} • ${prog.finalizedAt ? (new Date(prog.finalizedAt.seconds ? prog.finalizedAt.seconds * 1000 : prog.finalizedAt).toLocaleString()) : ''}`;
+
+      // marksDetails expected to be { studentId: { place, grade, points, rawMarks, codeLetter } }
+      const md = prog.marksDetails || {};
+      // build entries for students that have place 1/2/3
+      const podiumEntries = Object.entries(md)
+        .map(([sid, details]) => {
+          const place = Number(details.place) || null;
+          return { sid, details, place };
+        })
+        .filter(e => e.place && (e.place === 1 || e.place === 2 || e.place === 3))
+        .sort((a, b) => a.place - b.place);
+
+      // Map to display rows for modal table
+      const rowsHtml = podiumEntries.map(e => {
+        const st = students.find(s => s.id === e.sid) || {};
+        const placeDisplay = `${e.place}${['st','nd','rd'][Math.min(2, e.place-1)] || ''}`;
+        const code = (prog.codeLetters && prog.codeLetters[e.sid]) || e.details.codeLetter || '-';
+        const grade = e.details.grade || '-';
+        const points = Number(e.details.points || 0);
+        const chest = st.chestNo || '-';
+        const name = st.name || 'Unknown';
+        const team = st.team || '-';
+        return `
+          <tr>
+            <td><strong>${placeDisplay}</strong></td>
+            <td>${escapeHtml(code)}</td>
+            <td>${escapeHtml(chest)}</td>
+            <td>${escapeHtml(name)}</td>
+            <td>${escapeHtml(team)}</td>
+            <td>${escapeHtml(grade)}</td>
+            <td>${points}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Generate winners HTML for image
+      const winnersHtml = podiumEntries.map(e => {
+        const placeNum = e.place;
+        let placeText = `${placeNum}ST`;
+        if (placeNum === 2) placeText = '2ND';
+        if (placeNum === 3) placeText = '3RD';
+        const medal = ['🥇', '🥈', '🥉'][placeNum - 1];
+        const st = students.find(s => s.id === e.sid) || {};
+        const name = st.name || 'Unknown';
+        const team = st.team || '-';
+        return `
+          <div class="winner-block">
+            <div class="winner-top">
+              ${medal} ${placeText} <strong class="student-name">${escapeHtml(name)}</strong>
+            </div>
+            <div class="winner-bottom">
+              <span class="team-name">${escapeHtml(team)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      currentProgramme.podiumRowsHtml = rowsHtml;
+      currentProgramme.winnersHtml = winnersHtml;
+
+      // If none found, show a friendly message (shouldn't happen if announced only after finalization, but safe)
+      modalResultsBody.innerHTML = rowsHtml.length ? rowsHtml : `<tr><td colspan="7" class="text-center small-muted">No podium places recorded for this programme.</td></tr>`;
+
+      // show the modal (Bootstrap)
+      const bsModal = new bootstrap.Modal(document.getElementById('resultModal'));
+      bsModal.show();
+    }
+    // expose for onclick in generated card
+    window.openProgramme = openProgramme;
+
+    // Save modal as image (html2canvas)
+    saveImageBtn.addEventListener('click', async () => {
+      if (!currentProgramme || !currentProgramme.winnersHtml) {
+        showToast('Error', 'No results to save.');
+        return;
+      }
+
+      // Populate image template
+      festTitleEl.textContent = `🌟 ${festName} Official Result 🌟`;
+      programmeNameEl.textContent = currentProgramme.name || 'Programme';
+      resultNumberEl.textContent = `Result: #${currentProgramme.resultNumber || '-'}`;
+      categoryLineEl.textContent = `Category: ${currentProgramme.category || 'Category'}`;
+      programmeLineEl.textContent = `Programme: ${currentProgramme.name || 'Programme'}`;
+      winnersContainerEl.innerHTML = currentProgramme.winnersHtml;
+
+      // Temporarily show the template for capture (off-screen)
+      const originalDisplay = imageTemplate.style.display;
+      imageTemplate.style.display = 'block';
+      imageTemplate.style.position = 'absolute';
+      imageTemplate.style.left = '-9999px';
+      imageTemplate.style.top = '0';
+
+      try {
+        const canvas = await html2canvas(imageTemplate, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+          allowTaint: true
+        });
+        // generate filename
+        const safeName = (currentProgramme.name || 'programme').replace(/[^\w\-]/g, '_').slice(0,40);
+        const filename = `${safeName}_podium.png`;
+        // download
+        canvas.toBlob(function(blob) {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          // Toast
+          showToast('Image saved', 'The podium image has been downloaded.');
+        }, 'image/png');
+      } catch (err) {
+        console.error('capture err', err);
+        showToast('Error', 'Failed to capture image.');
+      } finally {
+        // Reset template
+        imageTemplate.style.display = originalDisplay;
+        imageTemplate.style.position = '';
+        imageTemplate.style.left = '';
+        imageTemplate.style.top = '';
+      }
+    }); 
+
+    // simple toast
+    function showToast(title, message) {
+      toastBody.textContent = `${title} — ${message}`;
+      const t = new bootstrap.Toast(publicToast);
+      t.show();
+    }
+
+    // wire search
+    searchInput.addEventListener('input', () => renderGrid(programmes));
+
+    // Initialize listeners
+    let unsubStudents = null;
+    let unsubProgrammes = null;
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadFestName();
+      unsubStudents = loadStudents();
+      unsubProgrammes = loadAnnouncedProgrammes();
+      // initial empty placeholder
+      grid.innerHTML = `<div class="col-12"><div class="center-note small-muted">Loading announced programmes…</div></div>`;
+    });
+
+    // cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (typeof unsubStudents === 'function') unsubStudents();
+      if (typeof unsubProgrammes === 'function') unsubProgrammes();
+    });
+
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
