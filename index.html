@@ -312,7 +312,6 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
       margin-bottom: 1.5rem;
-      cursor: pointer;
     }
     .result-card:hover {
       transform: translateY(-6px);
@@ -348,16 +347,19 @@
       font-size: 0.875rem;
     }
     .btn-view {
-      background: var(--primary-gradient);
-      color: white;
+      background: transparent;
+      border: 2px solid var(--primary-500);
+      color: var(--primary-500);
       border-radius: 50px;
       padding: 0.5rem 1rem;
       font-weight: 500;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
     }
     .btn-view:hover {
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
       transform: scale(1.05);
-      box-shadow: var(--shadow-md);
     }
 
     /* Modal Enhancements */
@@ -819,7 +821,7 @@
         const finalizedBadge = p.finalized ? '<span class="badge bg-success">Finalized</span>' : '';
         const subtitle = p.type ? `${p.type}${p.participantCount ? ` • Group of ${p.participantCount}` : ''}` : '';
         return `
-          <div class="result-card col-12" role="button" tabindex="0" onclick="openProgramme('${p.id}')" onkeydown="if(event.key==='Enter') openProgramme('${p.id}')" aria-label="View results for ${p.name}">
+          <div class="result-card col-12">
             <div class="result-card-top d-flex justify-content-between align-items-start">
               <div class="badge-cat">${escapeHtml(p.category || 'General')}</div>
               <div class="text-end">${finalizedBadge}</div>
@@ -829,7 +831,7 @@
               <p class="result-card-subtitle mb-3">${escapeHtml(subtitle)}</p>
               <div class="result-card-footer">
                 <span class="result-number">Result #${p.resultNumber || '-'}</span>
-                <button class="btn btn-view">View Podium</button>
+                <button class="btn btn-view" onclick="openProgramme('${p.id}')" onkeydown="if(event.key==='Enter') openProgramme('${p.id}')" aria-label="View results for ${p.name}">View Podium</button>
               </div>
             </div>
           </div>
@@ -1079,4 +1081,3 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
